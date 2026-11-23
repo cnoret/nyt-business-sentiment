@@ -125,6 +125,7 @@ tests/               unit, integration and app tests
 - January 2026 returns far fewer business articles (38) than other months (about 290), which leaves a gap in the series.
 - Most headlines are factual, so the model labels 80% of them neutral and the index moves within a narrow band.
 
-## License
+## License and data
 
-[MIT](LICENSE). Article metadata belongs to The New York Times and is accessed through its public API.
+- **Code:** released under the [MIT License](LICENSE).
+- **Data:** headlines, abstracts and links come from the [NYT Archive API](https://developer.nytimes.com/docs/archive-product/1/overview) and remain the property of The New York Times.

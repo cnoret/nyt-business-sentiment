@@ -30,21 +30,27 @@ Figures from the first backfill (November 2026); the live app always shows the l
 ## How it works
 
 ```mermaid
-flowchart LR
-    NYT[NYT Archive API] --> F[Fetch and clean<br/>business articles]
-    F --> S[Sentiment<br/>DistilBERT, 5 labels]
-    S --> I[Daily index<br/>mean polarity]
-    I --> P[Prophet<br/>30-day forecast]
+flowchart TB
+    API[NYT Archive API] --> PKG
 
-    subgraph Online [Public demo]
-        GA[GitHub Actions<br/>weekly job] --> D[(Parquet on<br/>data branch)] --> APP[Streamlit<br/>Community Cloud]
+    subgraph PKG ["nyt_sentiment package"]
+        direction LR
+        F[Fetch and clean<br/>business articles] --> S[Sentiment<br/>DistilBERT, 5 labels] --> I[Daily index<br/>mean polarity] --> P[Prophet<br/>30-day forecast]
     end
 
-    subgraph Local [Local stack, docker compose]
-        AF[Airflow 3] --> S3[(RustFS S3<br/>raw JSON)]
-        AF --> PG[(PostgreSQL<br/>articles, forecast)]
-        AF --> ML[MLflow<br/>runs and artifacts]
-        PG --> ST[Streamlit]
+    PKG -->|online| Online
+    PKG -->|local| Local
+
+    subgraph Online ["Public demo"]
+        direction LR
+        GA[GitHub Actions<br/>every Monday] --> D[(Parquet files<br/>data branch)] --> APP[Streamlit<br/>Community Cloud]
+    end
+
+    subgraph Local ["Local stack (Docker)"]
+        direction LR
+        AF[Airflow 3] --> PG[(PostgreSQL<br/>articles, forecast)] --> ST[Streamlit]
+        AF --> S3[(RustFS S3<br/>raw JSON)]
+        AF --> ML[MLflow<br/>runs, artifacts]
     end
 ```
 

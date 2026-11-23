@@ -1,0 +1,11 @@
+# Test and lint dependencies (the ML extras are not needed: models are mocked,
+# Prophet is exercised for real on a small series).
+pandas==3.1.1
+requests==2.34.2
+prophet==1.5.0
+sqlalchemy==2.1.9
+psycopg2-binary==2.9.13
+boto3==1.44.9
+pyarrow==26.0.1
+pytest==9.2.0
+ruff==0.17.6

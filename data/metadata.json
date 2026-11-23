@@ -1,0 +1,9 @@
+{
+  "updated_at": "2026-11-23T17:43:26+00:00",
+  "n_articles": 2882,
+  "n_new_articles": 2882,
+  "first_day": "2025-12-01",
+  "last_day": "2026-11-03",
+  "horizon_days": 30,
+  "model": "tabularisai/multilingual-sentiment-analysis"
+}

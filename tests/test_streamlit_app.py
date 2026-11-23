@@ -52,7 +52,6 @@ def test_dashboard_renders(monkeypatch, snapshot_dir):
 
 def test_dashboard_shows_error_without_data(monkeypatch, tmp_path):
     monkeypatch.delenv("DATABASE_URL", raising=False)
-    monkeypatch.delenv("DATA_URL", raising=False)
-    monkeypatch.setenv("DATA_DIR", str(tmp_path / "missing"))
+    monkeypatch.setenv("DATA_URL", "http://127.0.0.1:9/unreachable")
     app = AppTest.from_file(str(APP), default_timeout=60).run()
     assert app.error and "Could not load the data" in app.error[0].value

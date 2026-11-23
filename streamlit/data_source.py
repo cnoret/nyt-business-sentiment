@@ -4,7 +4,8 @@
    (local docker compose stack);
 2. ``DATA_URL``: base URL of a published Parquet snapshot (the public app
    reads the ``data`` branch of the repository);
-3. ``DATA_DIR``: a local folder holding the same snapshot (default ``data``).
+3. ``DATA_DIR``: a local folder holding the same snapshot (default ``data``);
+4. otherwise the snapshot published on the repository's ``data`` branch.
 """
 
 from __future__ import annotations
@@ -21,6 +22,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from nyt_sentiment.forecast import daily_sentiment  # noqa: E402
+
+DEFAULT_DATA_URL = "https://raw.githubusercontent.com/cnoret/nytimes-sentiment-ml/data/data"
 
 
 @dataclass
@@ -81,8 +84,10 @@ def load_dashboard() -> Dashboard:
         board = _from_database(url)
     elif base := os.getenv("DATA_URL"):
         board = _from_url(base)
+    elif (path := Path(os.getenv("DATA_DIR", "data"))).is_dir():
+        board = _from_dir(path)
     else:
-        board = _from_dir(Path(os.getenv("DATA_DIR", "data")))
+        board = _from_url(DEFAULT_DATA_URL)
     for frame, column in (
         (board.articles, "pub_date"),
         (board.daily, "date"),

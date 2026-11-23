@@ -37,7 +37,10 @@ def _layout(fig: go.Figure, y_title: str) -> go.Figure:
 
 
 def index_chart(daily: pd.DataFrame, forecast: pd.DataFrame) -> go.Figure:
-    smooth = daily.set_index("date")["sentiment_index"].rolling("7D").mean()
+    # Reindex on calendar days so that gaps in the data break the line
+    # instead of being bridged by a straight segment.
+    calendar = daily.set_index("date")["sentiment_index"].asfreq("D")
+    smooth = calendar.rolling(7, min_periods=3).mean()
     future = forecast.loc[forecast["is_forecast"]]
     fig = go.Figure()
     fig.add_trace(

@@ -51,3 +51,5 @@ data/
 # Secret files
 nytimes_accessKeys.csv
 .env
+.ruff_cache/
+.pytest_cache/

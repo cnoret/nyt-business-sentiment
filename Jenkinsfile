@@ -20,7 +20,7 @@ pipeline {
 
         stage('Lint') {
             steps {
-                sh 'docker run --rm "$IMAGE" ruff check src tests airflow'
+                sh 'docker run --rm "$IMAGE" ruff check src tests airflow streamlit'
             }
         }
 

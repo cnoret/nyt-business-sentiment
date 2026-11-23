@@ -11,6 +11,7 @@ different workers and be retried independently.
 from __future__ import annotations
 
 import logging
+import time
 
 import pandas as pd
 
@@ -25,7 +26,9 @@ def fetch_raw_to_s3(settings: Settings, months: list[tuple[int, int]]) -> list[s
     client = storage.s3_client(settings.s3_endpoint_url)
     storage.ensure_bucket(client, settings.s3_bucket)
     keys = []
-    for year, month in months:
+    for index, (year, month) in enumerate(months):
+        if index:
+            time.sleep(12)  # NYT allows 5 requests per minute
         docs = nyt_api.fetch_archive_month(year, month, settings.nyt_api_key)
         key = f"raw/archive/{year}-{month:02d}.json"
         storage.upload_json(client, settings.s3_bucket, key, docs)

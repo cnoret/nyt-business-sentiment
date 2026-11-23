@@ -31,6 +31,7 @@ def snapshot_dir(tmp_path, fake_classifier):
         [(2026, 1), (2026, 2)],
         fake_classifier,
         fetch=lambda year, month, _key: _month_docs(year, month),
+        pause=0,
     )
     return tmp_path
 

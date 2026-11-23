@@ -217,7 +217,7 @@ def main() -> None:
         )
     st.caption(
         "Data: The New York Times Archive API · "
-        "[Source code](https://github.com/cnoret/nytimes-sentiment-ml)"
+        "[Source code](https://github.com/cnoret/nyt-business-sentiment)"
     )
 
 

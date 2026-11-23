@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from nyt_sentiment.forecast import daily_sentiment  # noqa: E402
 
-DEFAULT_DATA_URL = "https://raw.githubusercontent.com/cnoret/nytimes-sentiment-ml/data/data"
+DEFAULT_DATA_URL = "https://raw.githubusercontent.com/cnoret/nyt-business-sentiment/data/data"
 
 
 @dataclass

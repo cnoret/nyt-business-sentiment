@@ -48,6 +48,7 @@ def update_snapshot(
     classifier: sentiment.Classifier | None = None,
     fetch=nyt_api.fetch_archive_month,
     now: datetime | None = None,
+    pause: float = 12.0,
 ) -> dict:
     """Fetch ``months``, score unseen articles and rewrite every snapshot file."""
     data_dir = Path(settings.data_dir)
@@ -55,11 +56,7 @@ def update_snapshot(
     existing = load_articles(data_dir)
     seen = set(existing["article_id"]) if not existing.empty else set()
 
-    docs = []
-    for year, month in months:
-        month_docs = fetch(year, month, settings.nyt_api_key)
-        log.info("Fetched %d documents for %d-%02d", len(month_docs), year, month)
-        docs.extend(month_docs)
+    docs = nyt_api.fetch_months(months, settings.nyt_api_key, fetch=fetch, pause=pause)
 
     cleaned = preprocess.clean_articles(nyt_api.docs_to_frame(docs))
     new = cleaned.loc[~cleaned["article_id"].isin(seen)]

@@ -64,3 +64,13 @@ def test_docs_to_frame_flattens_documents(archive_docs):
 def test_months_between_spans_year_boundary():
     months = nyt_api.months_between(pd.Timestamp("2025-11-20"), pd.Timestamp("2026-02-01"))
     assert months == [(2025, 11), (2025, 12), (2026, 1), (2026, 2)]
+
+
+def test_fetch_months_pauses_between_calls(monkeypatch):
+    sleeps = []
+    monkeypatch.setattr(nyt_api.time, "sleep", sleeps.append)
+    docs = nyt_api.fetch_months(
+        [(2026, 1), (2026, 2), (2026, 3)], "key", fetch=lambda y, m, k: [{"m": m}], pause=12
+    )
+    assert docs == [{"m": 1}, {"m": 2}, {"m": 3}]
+    assert sleeps == [12, 12]

@@ -33,11 +33,13 @@ def test_update_snapshot_is_incremental(tmp_path, fake_classifier):
         return _month_docs(year, month)
 
     now = datetime(2026, 2, 21, tzinfo=UTC)
-    meta = update_snapshot(settings, [(2026, 1)], fake_classifier, fetch, now=now)
+    meta = update_snapshot(settings, [(2026, 1)], fake_classifier, fetch, now=now, pause=0)
     assert meta["n_articles"] == 60
     assert meta["n_new_articles"] == 60
 
-    meta = update_snapshot(settings, [(2026, 1), (2026, 2)], fake_classifier, fetch, now=now)
+    meta = update_snapshot(
+        settings, [(2026, 1), (2026, 2)], fake_classifier, fetch, now=now, pause=0
+    )
     assert meta["n_articles"] == 120
     assert meta["n_new_articles"] == 60  # January was not scored twice
     assert meta["last_day"] == "2026-02-20"

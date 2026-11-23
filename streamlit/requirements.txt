@@ -1,4 +1,8 @@
-pandas
-psycopg2
-wordcloud
-plotly
+# Streamlit Community Cloud installs this file (main file: streamlit/app.py).
+streamlit==1.67.0
+pandas==3.1.1
+plotly==7.1.0
+pyarrow==26.0.1
+requests==2.34.2
+sqlalchemy==2.1.9
+psycopg2-binary==2.9.13

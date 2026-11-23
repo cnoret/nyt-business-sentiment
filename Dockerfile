@@ -9,5 +9,7 @@ COPY src ./src
 RUN pip install --no-cache-dir -r requirements-dev.txt && pip install --no-cache-dir --no-deps -e .
 
 COPY tests ./tests
+COPY streamlit ./streamlit
+COPY airflow ./airflow
 
 CMD ["python", "-m", "pytest"]

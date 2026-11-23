@@ -12,7 +12,11 @@ requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.2,<4",
     "requests>=2.32,<3",
+    "pyarrow>=17",
 ]
+
+[project.scripts]
+nyt-sentiment = "nyt_sentiment.cli:main"
 
 [project.optional-dependencies]
 ml = [

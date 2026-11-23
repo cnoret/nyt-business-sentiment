@@ -1,0 +1,74 @@
+name: Refresh data
+
+# Weekly batch job that replaces Airflow for the public demo: fetch the latest
+# NYT business articles, score the new ones, re-fit the forecast and publish
+# the Parquet snapshot on the `data` branch, which the Streamlit app reads.
+
+on:
+  schedule:
+    - cron: "17 5 * * 1" # Mondays 05:17 UTC
+  workflow_dispatch:
+    inputs:
+      months:
+        description: "Months to (re)fetch (use 12 for the initial backfill)"
+        default: "2"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      NYT_API_KEY: ${{ secrets.NYT_API_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check out the data branch
+        run: |
+          if git ls-remote --exit-code --heads origin data >/dev/null; then
+            git fetch --depth 1 origin data
+            git worktree add publish origin/data
+            git -C publish switch -c data
+          else
+            git worktree add --orphan -b data publish
+          fi
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Cache the sentiment model
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/huggingface
+          key: hf-tabularisai-multilingual-sentiment-analysis
+
+      - name: Install
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[ml]"
+
+      - name: Update the snapshot
+        run: nyt-sentiment snapshot --months "${{ inputs.months || '2' }}" --data-dir publish/data
+
+      - name: Publish to the data branch
+        working-directory: publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898281+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "No change in the snapshot."
+            exit 0
+          fi
+          git commit -m "Refresh data snapshot ($(jq -r .last_day data/metadata.json))"
+          git push origin data
